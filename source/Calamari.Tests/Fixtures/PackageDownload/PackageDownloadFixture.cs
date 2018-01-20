@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using Calamari.Integration.FileSystem;
+using Calamari.Integration.Packages;
 using Calamari.Tests.Fixtures.Deployment.Packages;
 using Calamari.Tests.Helpers;
 using NUnit.Framework;
@@ -87,7 +88,8 @@ namespace Calamari.Tests.Fixtures.PackageDownload
                 MavenPublicFeed.PackageId, 
                 MavenPublicFeed.Version, 
                 MavenPublicFeed.Id, 
-                MavenPublicFeedUri);
+                MavenPublicFeedUri,
+                "Maven");
 
             result.AssertSuccess();
 
@@ -112,7 +114,8 @@ namespace Calamari.Tests.Fixtures.PackageDownload
                 MavenPublicFeed.PackageId, 
                 MavenPublicFeed.Version, 
                 MavenPublicFeed.Id, 
-                MavenPublicFeedUri);
+                MavenPublicFeedUri,
+                "Maven");
 
             result.AssertSuccess();
 
@@ -164,7 +167,7 @@ namespace Calamari.Tests.Fixtures.PackageDownload
         [Test]
         public void ShouldUseMavenPackageFromCache()
         {
-            DownloadPackage(MavenPublicFeed.PackageId, MavenPublicFeed.Version, MavenPublicFeed.Id, MavenPublicFeedUri).AssertSuccess();
+            DownloadPackage(MavenPublicFeed.PackageId, MavenPublicFeed.Version, MavenPublicFeed.Id, MavenPublicFeedUri, "Maven").AssertSuccess();
 
             var result = DownloadPackage(MavenPublicFeed.PackageId, MavenPublicFeed.Version, MavenPublicFeed.Id, MavenPublicFeedUri);
 
@@ -180,7 +183,7 @@ namespace Calamari.Tests.Fixtures.PackageDownload
         [Test]
         public void ShouldUseMavenSnapshotPackageFromCache()
         {
-            DownloadPackage(MavenPublicFeed.PackageId, MavenPublicFeed.Version, MavenPublicFeed.Id, MavenPublicFeedUri).AssertSuccess();
+            DownloadPackage(MavenPublicFeed.PackageId, MavenPublicFeed.Version, MavenPublicFeed.Id, MavenPublicFeedUri, "Maven").AssertSuccess();
 
             var result = DownloadPackage(MavenPublicFeed.PackageId, MavenPublicFeed.Version, MavenPublicFeed.Id, MavenPublicFeedUri);
 
@@ -222,7 +225,8 @@ namespace Calamari.Tests.Fixtures.PackageDownload
                 MavenPublicFeed.PackageId,
                 MavenPublicFeed.Version, 
                 MavenPublicFeed.Id,
-                MavenPublicFeedUri);
+                MavenPublicFeedUri,
+                "Maven");
             
             firstDownload.AssertSuccess();
             
@@ -230,7 +234,8 @@ namespace Calamari.Tests.Fixtures.PackageDownload
                 MavenPublicFeed.PackageId, 
                 MavenPublicFeed.Version, 
                 MavenPublicFeed.Id,
-                MavenPublicFeedUri, 
+                MavenPublicFeedUri,
+                "Maven",
                 forcePackageDownload: true);
             
             secondDownload.AssertSuccess();
@@ -244,7 +249,7 @@ namespace Calamari.Tests.Fixtures.PackageDownload
             secondDownload.AssertOutput("Package {0} {1} successfully downloaded from feed: '{2}'", MavenPublicFeed.PackageId, MavenPublicFeed.Version, MavenPublicFeedUri);
         }
         
-        [Test]        
+        [Test]
         public void ShouldByPassCacheAndDownloadMavenSnapshotPackage()
         {
 
@@ -252,15 +257,17 @@ namespace Calamari.Tests.Fixtures.PackageDownload
                 MavenSnapshotPublicFeed.PackageId,
                 MavenSnapshotPublicFeed.Version, 
                 MavenSnapshotPublicFeed.Id,
-                MavenSnapshotPublicFeedUri);
+                MavenSnapshotPublicFeedUri,
+                "Maven");
             
             firstDownload.AssertSuccess();
             
             var secondDownload = DownloadPackage(
-                MavenSnapshotPublicFeed.PackageId, 
-                MavenSnapshotPublicFeed.Version, 
+                MavenSnapshotPublicFeed.PackageId,
+                MavenSnapshotPublicFeed.Version,
                 MavenSnapshotPublicFeed.Id,
-                MavenSnapshotPublicFeedUri, 
+                MavenSnapshotPublicFeedUri,
+                "Maven",
                 forcePackageDownload: true);
             
             secondDownload.AssertSuccess();
@@ -315,7 +322,7 @@ namespace Calamari.Tests.Fixtures.PackageDownload
         {
             DownloadPackage(AuthFeed.PackageId, AuthFeed.Version, AuthFeed.Id, AuthFeedUri, FeedUsername, FeedPassword).AssertSuccess();
 
-            var result = DownloadPackage(AuthFeed.PackageId, AuthFeed.Version, AuthFeed.Id, AuthFeedUri, FeedUsername, FeedPassword, true);
+            var result = DownloadPackage(AuthFeed.PackageId, AuthFeed.Version, AuthFeed.Id, AuthFeedUri, "NuGet", FeedUsername, FeedPassword, true);
 
             result.AssertSuccess();
 
@@ -502,6 +509,7 @@ namespace Calamari.Tests.Fixtures.PackageDownload
             string packageVersion,
             string feedId,
             string feedUri,
+            string feedType = "NuGet",
             string feedUsername = "",
             string feedPassword = "",
             bool forcePackageDownload = false,
@@ -514,6 +522,7 @@ namespace Calamari.Tests.Fixtures.PackageDownload
                 .Argument("packageVersion", packageVersion)
                 .Argument("feedId", feedId)
                 .Argument("feedUri", feedUri)
+                .Argument("feedType", feedType)
                 .Argument("attempts", attempts.ToString())
                 .Argument("attemptBackoffSeconds", attemptBackoffSeconds.ToString());
 

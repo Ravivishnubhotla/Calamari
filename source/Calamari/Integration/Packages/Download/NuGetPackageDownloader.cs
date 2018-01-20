@@ -2,12 +2,16 @@
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Web;
 using Calamari.Integration.FileSystem;
 using Calamari.Integration.Packages.NuGet;
 using Calamari.Util;
 using Octopus.Versioning;
+using Octopus.Versioning.Constants;
 using Octopus.Versioning.Factories;
 using Octopus.Versioning.Metadata;
+using SharpCompress.Archives.Zip;
+using SharpCompress.Readers;
 #if USE_NUGET_V2_LIBS
 using NuGet;
 #else
@@ -31,6 +35,7 @@ namespace Calamari.Integration.Packages.Download
             IVersion version,
             string feedId,
             Uri feedUri,
+            FeedType feedType,
             ICredentials feedCredentials,
             bool forcePackageDownload,
             int maxDownloadAttempts,

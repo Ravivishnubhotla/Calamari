@@ -11,48 +11,51 @@ namespace Calamari.Integration.Packages.Download
     /// </summary>
     public class PackageDownloaderStrategy : IPackageDownloader
     {
-        static readonly IPackageIDParser MavenPackageIdParser = new MavenPackageIDParser();
-        static readonly IPackageIDParser NugetPackageIdParser = new NuGetPackageIDParser();
-
         public void DownloadPackage(
             string packageId,
             IVersion version,
             string feedId,
             Uri feedUri,
+            FeedType feedType,
             ICredentials feedCredentials,
             bool forcePackageDownload,
             int maxDownloadAttempts,
             TimeSpan downloadAttemptBackoff,
             out string downloadedTo,
-            out string hash, 
+            out string hash,
             out long size)
         {
-            IPackageDownloader downloader = null;
-            if (MavenPackageIdParser.TryGetMetadataFromPackageID(packageId, out var mavenMetadata))
+
+
+            GetDownloader(feedType)
+                .DownloadPackage(
+                    packageId,
+                    version,
+                    feedId,
+                    feedUri,
+                    feedType, //TODO: Remove... Dont think we need the type at this point.
+                    feedCredentials,
+                    forcePackageDownload,
+                    maxDownloadAttempts,
+                    downloadAttemptBackoff,
+                    out downloadedTo,
+                    out hash,
+                    out size);
+        }
+
+        IPackageDownloader GetDownloader(FeedType feedType)
+        {
+            switch (feedType)
             {
-                downloader = new MavenPackageDownloader();
+                case FeedType.Maven:
+                    return new MavenPackageDownloader();
+                case FeedType.NuGet:
+                    return new NuGetPackageDownloader();
+                case FeedType.GitHub:
+                    return new GitHubPackageDownloader();
+                default:
+                    throw new NotImplementedException($"Feed type {feedType} does not support downloading on the Target.");
             }
-            else if (NugetPackageIdParser.TryGetMetadataFromPackageID(packageId, out var nugetMetadata))
-            {
-                downloader = new NuGetPackageDownloader();                
-            }
-            else
-            {
-                throw new NotImplementedException($"Package ID {packageId} is not recognised.");
-            }
-            
-            downloader.DownloadPackage(
-                packageId,
-                version, 
-                feedId, 
-                feedUri, 
-                feedCredentials, 
-                forcePackageDownload, 
-                maxDownloadAttempts, 
-                downloadAttemptBackoff, 
-                out downloadedTo, 
-                out hash, 
-                out size);
         }
     }
 }

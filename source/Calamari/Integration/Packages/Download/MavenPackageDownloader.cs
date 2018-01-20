@@ -36,6 +36,7 @@ namespace Calamari.Integration.Packages.Download
             IVersion version,
             string feedId,
             Uri feedUri,
+            FeedType feedType,
             ICredentials feedCredentials,
             bool forcePackageDownload,
             int maxDownloadAttempts,

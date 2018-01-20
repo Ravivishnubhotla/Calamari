@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Net;
 using Calamari.Commands.Support;
+using Calamari.Integration.Packages;
 using Calamari.Integration.Packages.Download;
 using Octopus.Versioning;
 using Octopus.Versioning.Factories;
@@ -21,6 +22,7 @@ namespace Calamari.Commands
         string feedUri;
         string feedUsername;
         string feedPassword;
+        FeedType? feedType;
         string maxDownloadAttempts = "5";
         string attemptBackoffSeconds = "10";
         
@@ -29,7 +31,8 @@ namespace Calamari.Commands
             Options.Add("packageId=", "Package ID to download", v => packageId = v);
             Options.Add("packageVersion=", "Package version to download", v => packageVersion = v);
             Options.Add("feedId=", "Id of the NuGet feed", v => feedId = v);
-            Options.Add("feedUri=", "URL to NuGet feed", v => feedUri = v);
+            Options.Add("feedUri=", "URL to External feed", v => feedUri = v);
+            Options.Add("feedType=", "[Optional] Type of External feed. Defaults to NuGet", ParseFeedTypeArg);
             Options.Add("feedUsername=", "[Optional] Username to use for an authenticated NuGet feed", v => feedUsername = v);
             Options.Add("feedPassword=", "[Optional] Password to use for an authenticated NuGet feed", v => feedPassword = v);
             Options.Add("attempts=", $"[Optional] The number of times to attempt downloading the package. Default: {maxDownloadAttempts}", v => maxDownloadAttempts = v);
@@ -43,6 +46,12 @@ namespace Calamari.Commands
 
             try
             {
+                if (!feedType.HasValue)
+                {
+                    Log.Verbose("Feed type not supplied. Defaulting type to NuGet.");
+                    feedType = FeedType.NuGet;
+                }
+
                 CheckArguments(
                     packageId, 
                     packageVersion, 
@@ -62,6 +71,7 @@ namespace Calamari.Commands
                     version,
                     feedId,
                     uri,
+                    feedType.Value,
                     GetFeedCredentials(feedUsername, feedPassword),
                     forcePackageDownload,
                     parsedMaxDownloadAttempts,
@@ -144,5 +154,15 @@ namespace Calamari.Commands
             parsedAttemptBackoff = TimeSpan.FromSeconds(parsedAttemptBackoffSeconds);
         }
         // ReSharper restore UnusedParameter.Local
+
+        private void ParseFeedTypeArg(string v)
+        {
+            if (!Enum.TryParse(v, out FeedType f))
+            {
+                throw new Exception($"Unable to parse FeedType {v}");
+            }
+
+            feedType = f;
+        }
     }
 }
