@@ -169,7 +169,7 @@ namespace Calamari.Tests.Fixtures.PackageDownload
         {
             DownloadPackage(MavenPublicFeed.PackageId, MavenPublicFeed.Version, MavenPublicFeed.Id, MavenPublicFeedUri, "Maven").AssertSuccess();
 
-            var result = DownloadPackage(MavenPublicFeed.PackageId, MavenPublicFeed.Version, MavenPublicFeed.Id, MavenPublicFeedUri);
+            var result = DownloadPackage(MavenPublicFeed.PackageId, MavenPublicFeed.Version, MavenPublicFeed.Id, MavenPublicFeedUri, "Maven");
 
             result.AssertSuccess();
 
@@ -185,7 +185,7 @@ namespace Calamari.Tests.Fixtures.PackageDownload
         {
             DownloadPackage(MavenPublicFeed.PackageId, MavenPublicFeed.Version, MavenPublicFeed.Id, MavenPublicFeedUri, "Maven").AssertSuccess();
 
-            var result = DownloadPackage(MavenPublicFeed.PackageId, MavenPublicFeed.Version, MavenPublicFeed.Id, MavenPublicFeedUri);
+            var result = DownloadPackage(MavenPublicFeed.PackageId, MavenPublicFeed.Version, MavenPublicFeed.Id, MavenPublicFeedUri, "Maven");
 
             result.AssertSuccess();
 

@@ -16,6 +16,7 @@ namespace Calamari.Tests.Fixtures.Integration.Packages
     public class GitHubPackageDownloadFixture
     {
         private static string home = Path.GetTempPath();
+
         [OneTimeSetUp]
         public void TestFixtureSetUp()
         {
@@ -27,11 +28,18 @@ namespace Calamari.Tests.Fixtures.Integration.Packages
         {
             Environment.SetEnvironmentVariable("TentacleHome", null);
         }
+        
 
         [SetUp]
         public void SetUp()
         {
-           Directory.Delete(new PackageDownloaderUtils().RootDirectory, true);
+            var downloadPath = new PackageDownloaderUtils().RootDirectory;
+            if (Directory.Exists(downloadPath))
+            {
+                Directory.Delete(downloadPath, true);
+            }
+
+            Directory.CreateDirectory(downloadPath);
         }
 
         [Test]
